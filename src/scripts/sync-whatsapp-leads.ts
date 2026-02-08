@@ -60,11 +60,12 @@ interface User {
 // ============================================
 
 /**
- * Format phone number to raw digits only
+ * Format phone number to raw digits only, as a number
  */
-function formatPhone(phone: string | null): string {
+function formatPhone(phone: string | null): number | string {
   if (!phone) return '';
-  return phone.replace(/\D/g, '');
+  const digits = phone.replace(/\D/g, '');
+  return digits ? Number(digits) : '';
 }
 
 /**
@@ -78,7 +79,7 @@ function extractFirstName(name: string | null): string {
 /**
  * Append a row to a Google Sheet
  */
-async function appendToSheet(spreadsheetId: string, values: string[][]): Promise<void> {
+async function appendToSheet(spreadsheetId: string, values: (string | number)[][]): Promise<void> {
   await sheets.spreadsheets.values.append({
     spreadsheetId,
     range: 'Sheet1!A:B',

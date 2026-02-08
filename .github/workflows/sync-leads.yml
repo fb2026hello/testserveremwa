@@ -1,7 +1,9 @@
 name: Sync WhatsApp Leads
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  schedule:
+    - cron: '*/30 * * * *'  # Run every 30 minutes
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   sync-leads:
