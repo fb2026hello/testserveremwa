@@ -169,8 +169,8 @@ async function sendEmail(user: any, senderEmail: string, sourceType: 'kickstarte
     // $('body').append(`<img src="${TRACKING_DOMAIN}/api/track/open?log_id=${logId}" alt="" width="1" height="1" style="display:none;" />`);
 
     // Inject Click Tracking & UTMs
-    $('a').each((_: number, element: cheerio.Element) => {
-        let href = $(element).attr('href');
+    $('a').each(function (this: any) {
+        let href = $(this).attr('href');
         if (href) {
             // UTM Injection for clura.dev links
             if (href.includes('clura.dev') && !href.includes('utm_source')) {
@@ -181,7 +181,7 @@ async function sendEmail(user: any, senderEmail: string, sourceType: 'kickstarte
 
             // Wrap in Tracking
             const trackedUrl = `${TRACKING_DOMAIN}/api/track/click?log_id=${logId}&dest=${encodeURIComponent(href)}`;
-            $(element).attr('href', trackedUrl);
+            $(this).attr('href', trackedUrl);
         }
     });
 
