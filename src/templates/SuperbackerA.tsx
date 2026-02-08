@@ -1,109 +1,102 @@
 import {
-    Html,
-    Head,
-    Preview,
     Body,
     Container,
-    Section,
+    Head,
+    Html,
     Img,
-    Heading,
-    Text,
-    Button,
-    Hr,
     Link,
+    Preview,
+    Text,
 } from '@react-email/components';
 import * as React from 'react';
-import { main, container, h1, text, button, hr, footer } from './styles';
 
-interface SuperbackerEmailAProps {
-    kickstarterUrl?: string;
-    githubUrl?: string;
-    assetsBaseUrl?: string;
-}
+const KICKSTARTER_URL = process.env.KICKSTARTER_URL || 'https://kickstarter.com/projects/clura/clura';
 
-export default function SuperbackerEmailA({
-    kickstarterUrl = process.env.KICKSTARTER_URL || 'https://kickstarter.com/projects/clura/clura',
-    githubUrl = 'https://github.com/Cluradev/CluraEnclosure',
-    assetsBaseUrl = process.env.ASSETS_BASE_URL || '',
-}: SuperbackerEmailAProps) {
-    return (
-        <Html>
-            <Head />
-            <Preview>Open Source hardware + 3d printer enclosure = better and safer printing</Preview>
-            <Body style={main}>
-                <Container style={container}>
-                    <Text style={text}>
-                        Hi, I'm Fabrizio. I'm an aerospace engineering student with a desire to help the open source community.
-                    </Text>
-                    <Text style={text}>
-                        So, you might be asking yourself: Why am I writing to you?
-                    </Text>
-                    <Text style={text}>
-                        I am writing to share a solution to a problem that many makers don't consider enough until it's too late: Air Quality.
-                    </Text>
+export const SuperbackerEmailA = () => (
+    <Html>
+        <Head />
+        <Preview>A safer way to 3D print, built by an aerospace student.</Preview>
+        <Body style={main}>
+            <Container style={container}>
+                <Text style={text}>Hi, I'm Fabrizio.</Text>
 
-                    <Img
-                        src={`${assetsBaseUrl}/Email_hero_1.jpg`}
-                        alt="Clura Enclosure"
-                        width="580"
-                        height="300"
-                        style={{ ...formattedImage, marginBottom: '20px' }}
-                    />
+                <Text style={text}>
+                    I'm an aerospace engineering student building an **Open Source 3D Printer Enclosure** to help the community.
+                </Text>
 
-                    <Heading style={h1}>What did I build?</Heading>
-                    <Text style={text}>
-                        I built Clura, the best completely open-source enclosure ecosystem featuring air filtration, environmental sensors, and more.
-                    </Text>
-                    <Text style={text}>
-                        I started this project because I wanted to print in my room without destroying my lungs (3D Printing releases VOCs and particulates in the air). I wanted an affordable, feature-packed enclosure that could be adapted to any printer. None existed, so I made my own.
-                    </Text>
+                <Text style={text}>
+                    So, you might be asking yourself: Why am I writing to you?
+                </Text>
 
-                    <Heading style={h1}>Why am I writing to you?</Heading>
-                    <Text style={text}>
-                        I'm here to just share with you the solution to a problem which I think many makers don't consider enough. I thought that you might want to check out our github repo which contains everything we have ever made and our documentation page.
-                    </Text>
-                    <Text style={text}>
-                        We are also launching on Kickstarter soon and if you wanted to support the project you could get the enclosure kit at a discounted price.
-                    </Text>
+                <Text style={text}>
+                    I am writing to share a solution to a problem that many makers don't consider enough until it's too late: Air Quality.
+                </Text>
 
-                    <Section style={{ marginTop: '20px', marginBottom: '20px' }}>
-                        <Button style={button} href={githubUrl}>
-                            Check the Github
-                        </Button>
-                        <Button style={{ ...button, backgroundColor: '#05ce78' }} href={kickstarterUrl}>
-                            Follow on Kickstarter
-                        </Button>
-                    </Section>
+                {/* Inline image, looks like attachment or pasted image */}
+                <Img
+                    src="https://www.clura.dev/Email_hero_1.jpg"
+                    width="100%"
+                    height="auto"
+                    alt="Clura Enclosure"
+                    style={{ marginTop: '16px', marginBottom: '16px', borderRadius: '4px' }}
+                />
 
-                    <Heading style={h1}>Want to learn more? Here is what Clura can do:</Heading>
-                    <Text style={text}>
-                        <strong>Feature 1 - Active Air Filtration:</strong> Real HEPA/Carbon scrubbing to remove VOCs.
-                    </Text>
-                    <Text style={text}>
-                        <strong>Feature 2 - Filament Weight Sensing:</strong> Know exactly how much material you have left.
-                    </Text>
-                    <Text style={text}>
-                        <strong>Feature 3 - Smart Ecosystem:</strong> A touch screen + sensors to monitor your print environment.
-                    </Text>
+                <Text style={text}>
+                    I built <strong>Clura</strong>, the best completely open-source enclosure ecosystem featuring air filtration, environmental sensors, and more.
+                </Text>
 
-                    <Hr style={hr} />
+                <Text style={text}>
+                    I started this project because I wanted to print in my room without destroying my lungs (3D Printing releases VOCs and particulates in the air). I wanted an affordable, feature-packed enclosure that could be adapted to any printer. None existed, so I made my own.
+                </Text>
 
-                    <Text style={text}>
-                        Best,
-                        <br />
-                        Fabrizio
-                    </Text>
-                    <Text style={footer}>
-                        Sent via Clura Engine
-                    </Text>
-                </Container>
-            </Body>
-        </Html>
-    );
-}
+                <Text style={text}>
+                    I thought that you might want to check out our <Link href="https://github.com/Cluradev/CluraEnclosure" style={link}>Github repo</Link> which contains everything we have ever made and our documentation page.
+                </Text>
 
-const formattedImage = {
-    borderRadius: '8px',
-    objectFit: 'cover' as const,
+                <Text style={text}>
+                    We are also launching on Kickstarter soon and if you wanted to support the project you could <Link href={KICKSTARTER_URL} style={link}>get the enclosure kit at a discounted price here</Link>.
+                </Text>
+
+                <Text style={text}>
+                    Here is what Clura can do:
+                    <br />• <strong>Feature 1 - Active Air Filtration:</strong> Real HEPA/Carbon scrubbing to remove VOCs.
+                    <br />• <strong>Feature 2 - Filament Weight Sensing:</strong> Know exactly how much material you have left.
+                    <br />• <strong>Feature 3 - Smart Ecosystem:</strong> A touch screen + sensors to monitor your print environment.
+                </Text>
+
+                <Text style={text}>
+                    Best,<br />
+                    Fabrizio
+                </Text>
+            </Container>
+        </Body>
+    </Html>
+);
+
+export default SuperbackerEmailA;
+
+// Personal "Gmail" Styles
+const main: React.CSSProperties = {
+    backgroundColor: '#ffffff',
+    fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', // Standard Gmail/System font
+};
+
+const container: React.CSSProperties = {
     width: '100%',
+    maxWidth: '600px',
+    margin: '0', // Gmail often has no margin for personal emails, or we align left
+    padding: '20px 0 20px 20px', // Slight padding left
+    textAlign: 'left',
+};
+
+const text: React.CSSProperties = {
+    fontSize: '14px', // Gmail standard size
+    lineHeight: '1.5',
+    color: '#000000',
+    marginBottom: '16px',
+};
+
+const link: React.CSSProperties = {
+    color: '#15c', // Gmail blue
+    textDecoration: 'underline',
 };

@@ -2,33 +2,33 @@ name: Email Scheduler
 
 on:
   schedule:
-    # Run every hour to check sending window and limits
+    # Run every hour at minute 0 (adjust as needed)
     - cron: '0 * * * *'
-  workflow_dispatch: # Allow manual triggering from GitHub UI
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
-  send-batch:
+  send-email-batch:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Run Send Batch Script
-      run: npm run send-batch
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        TRACKING_DOMAIN: ${{ secrets.TRACKING_DOMAIN }}
-        ASSETS_BASE_URL: ${{ secrets.ASSETS_BASE_URL }}
-        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
-        KICKSTARTER_URL: ${{ secrets.KICKSTARTER_URL }}
+      - name: Run Batch Sender
+        run: npm run send-batch
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TRACKING_DOMAIN: ${{ secrets.TRACKING_DOMAIN }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          ASSETS_BASE_URL: ${{ secrets.ASSETS_BASE_URL }}
+          KICKSTARTER_URL: ${{ secrets.KICKSTARTER_URL }}
+          ENABLE_SENDING: ${{ secrets.ENABLE_SENDING }}

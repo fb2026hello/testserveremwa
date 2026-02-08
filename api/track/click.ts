@@ -16,20 +16,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         // Async Logging
-        await pool.query(
-            `
-      WITH updated_log AS (
-        UPDATE email_logs 
-        SET has_clicked = TRUE, clicked_at = NOW() 
-        WHERE id = $1 
-        RETURNING user_id
-      )
-      UPDATE users 
-      SET email_1_clicked_at = NOW() 
-      WHERE id = (SELECT user_id FROM updated_log)
-      `,
+        // Async Logging
+        const logRes = await pool.query(
+            `UPDATE email_logs 
+             SET has_clicked = TRUE, clicked_at = NOW() 
+             WHERE id = $1 
+             RETURNING user_id, lead_source`,
             [log_id]
         );
+
+        if (logRes.rows.length > 0) {
+            const { user_id, lead_source } = logRes.rows[0];
+            const table = lead_source === 'instagram' ? 'leads_instagram' : 'leads_kickstarter';
+
+            if (table === 'leads_instagram' || table === 'leads_kickstarter') {
+                await pool.query(
+                    `UPDATE ${table} SET email_1_clicked_at = NOW() WHERE id = $1`,
+                    [user_id]
+                );
+            }
+        }
 
         // Redirect
         res.redirect(302, destination);

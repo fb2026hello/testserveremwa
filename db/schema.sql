@@ -1,53 +1,77 @@
--- Global Config Table
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. Campaign Configuration
 CREATE TABLE IF NOT EXISTS campaign_config (
-    key VARCHAR(50) PRIMARY KEY,
-    value TEXT
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
 );
 
--- Seed with a placeholder date (User must update this via SQL, not code, or use a setup script)
-INSERT INTO campaign_config (key, value) VALUES ('campaign_start_date', '2026-02-01') ON CONFLICT DO NOTHING;
+INSERT INTO campaign_config (key, value) 
+VALUES ('campaign_start_date', CURRENT_DATE::text) 
+ON CONFLICT (key) DO NOTHING;
 
--- 1. The Users Table (Flat structure for easy analytics)
--- Note: extended to include email_2, etc., although currently unused as per plan
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    email VARCHAR(255) NOT NULL UNIQUE,
-    user_type VARCHAR(50), -- 'Superbacker' or 'Instagram'
-    technology_niche VARCHAR(255), -- Optional context
-    user_testing_version VARCHAR(1), -- 'A', 'B', or 'C'
+-- 2. Leads Tables (Split by Source)
+-- Drop old users table if it exists (Data Migration: None assumed, fresh import)
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Table A: Kickstarter Superbackers
+CREATE TABLE IF NOT EXISTS leads_kickstarter (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT UNIQUE NOT NULL,
+    first_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
-    -- Engagement Stats for Email 1
-    email_1_sent_at TIMESTAMP,
-    email_1_clicked_at TIMESTAMP,
-    email_1_opened_at TIMESTAMP,
-    
-    -- Placeholder for future emails
-    email_2_sent_at TIMESTAMP,
-    email_2_clicked_at TIMESTAMP,
-    email_2_opened_at TIMESTAMP,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Segmentation
+    user_testing_version TEXT, -- 'A', 'B', 'C'
+
+    -- Email Status
+    email_1_sent_at TIMESTAMP WITH TIME ZONE,
+    email_2_sent_at TIMESTAMP WITH TIME ZONE,
+    email_3_sent_at TIMESTAMP WITH TIME ZONE
 );
 
--- 2. The Email Logs Table
+-- Table B: Instagram Contacts
+CREATE TABLE IF NOT EXISTS leads_instagram (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT UNIQUE NOT NULL,
+    first_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    -- Segmentation
+    user_testing_version TEXT, -- 'A', 'B', 'C'
+
+    -- Email Status
+    email_1_sent_at TIMESTAMP WITH TIME ZONE,
+    email_2_sent_at TIMESTAMP WITH TIME ZONE,
+    email_3_sent_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 3. Email Logs (Tracking)
 CREATE TABLE IF NOT EXISTS email_logs (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    email_address VARCHAR(255) NOT NULL,
-    email_type VARCHAR(50), -- e.g., 'Superbacker_Email_1'
-    email_version VARCHAR(1), -- 'A', 'B', or 'C'
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL, -- Logical FK, but no constraint to allow multi-table support
+    email_address TEXT NOT NULL,
+    sender_email TEXT, -- The specific 'fabriN@...' address that sent this
     
-    has_opened BOOLEAN DEFAULT FALSE,
-    opened_at TIMESTAMP,
+    -- Source Tracking
+    lead_source TEXT NOT NULL, -- 'kickstarter' OR 'instagram'
     
-    has_clicked BOOLEAN DEFAULT FALSE,
-    clicked_at TIMESTAMP,
+    -- Metadata
+    email_type TEXT NOT NULL, -- e.g. 'Email_1_Superbacker'
+    email_version TEXT, -- 'A', 'B', 'C'
     
-    resend_id VARCHAR(255)
+    -- Provider Info
+    sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    resend_id TEXT,
+
+    -- Engagement
+    opened_at TIMESTAMP WITH TIME ZONE,
+    clicked_at TIMESTAMP WITH TIME ZONE,
+    click_destination TEXT
 );
 
--- Indexes for performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_email_logs_user_id ON email_logs(user_id);
+-- Indices for performance
+CREATE INDEX IF NOT EXISTS idx_leads_ks_email ON leads_kickstarter(email);
+CREATE INDEX IF NOT EXISTS idx_leads_ig_email ON leads_instagram(email);
+CREATE INDEX IF NOT EXISTS idx_logs_sent_at ON email_logs(sent_at);
