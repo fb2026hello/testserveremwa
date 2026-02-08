@@ -40,19 +40,19 @@ async function main() {
     console.log(`Sending 6 Test Emails to ${TEST_RECIPIENT}...`);
 
     // Superbackers
-    await sendTest(SuperbackerEmailA({}), 'Superbacker A: Open Source hardware...', 'Superbacker A');
+    await sendTest(SuperbackerEmailA({ name: 'Fabrizio' }), 'Superbacker A: Open Source hardware...', 'Superbacker A');
     await new Promise(r => setTimeout(r, 1000));
-    await sendTest(SuperbackerEmailB({}), 'Superbacker B: Open source hardware + Aero...', 'Superbacker B');
+    await sendTest(SuperbackerEmailB({ name: 'Fabrizio' }), 'Superbacker B: Open source hardware + Aero...', 'Superbacker B');
     await new Promise(r => setTimeout(r, 1000));
-    await sendTest(SuperbackerEmailC({}), 'Superbacker C: The 3d printer enclosure...', 'Superbacker C');
+    await sendTest(SuperbackerEmailC({ name: 'Fabrizio' }), 'Superbacker C: The 3d printer enclosure...', 'Superbacker C');
     await new Promise(r => setTimeout(r, 1000));
 
     // Instagram
-    await sendTest(InstagramEmailA({}), 'Instagram A: Join the Open Source...', 'Instagram A');
+    await sendTest(InstagramEmailA({ name: 'Fabrizio' }), 'Instagram A: Join the Open Source...', 'Instagram A');
     await new Promise(r => setTimeout(r, 1000));
-    await sendTest(InstagramEmailB({}), 'Instagram B: Safe, Affordable...', 'Instagram B');
+    await sendTest(InstagramEmailB({ name: 'Fabrizio' }), 'Instagram B: Safe, Affordable...', 'Instagram B');
     await new Promise(r => setTimeout(r, 1000));
-    await sendTest(InstagramEmailC({}), 'Instagram C: Building the future...', 'Instagram C');
+    await sendTest(InstagramEmailC({ name: 'Fabrizio' }), 'Instagram C: Building the future...', 'Instagram C');
 
     console.log('Done.');
 }

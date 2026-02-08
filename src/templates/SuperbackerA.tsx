@@ -18,7 +18,7 @@ export const SuperbackerEmailA = () => (
         <Preview>A safer way to 3D print, built by an aerospace student.</Preview>
         <Body style={main}>
             <Container style={container}>
-                <Text style={text}>Hi, I'm Fabrizio.</Text>
+                <Text style={text}>Hi {name || 'Maker'}, I'm Fabrizio.</Text>
 
                 <Text style={text}>
                     I'm an aerospace engineering student building an **Open Source 3D Printer Enclosure** to help the community.

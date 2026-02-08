@@ -17,13 +17,17 @@ import { main, container, heading, paragraph, button, buttonKickstarter, link, h
 
 const KICKSTARTER_URL = process.env.KICKSTARTER_URL || 'https://kickstarter.com/projects/clura/clura';
 
-export const SuperbackerEmailC = () => (
+interface EmailProps {
+    name?: string;
+}
+
+export const SuperbackerEmailC = ({ name }: EmailProps) => (
     <Html>
         <Head />
         <Preview>Meet Clura: 100% Open Source. Smart Sensors. Active Filtration.</Preview>
         <Body style={main}>
             <Container style={container}>
-                <Text style={paragraph}>Hi, I'm Fabrizio.</Text>
+                <Text style={paragraph}>Hi {name || 'Maker'}, I'm Fabrizio.</Text>
                 <Text style={paragraph}>I'm an aerospace engineering student, but really, I'm just a maker who got tired of proprietary hardware.</Text>
                 <Text style={paragraph}>
                     I wanted to print safely in my room, but the only good enclosures on the market were closed-source, expensive, and unmodifiable. The cheap ones were just fire hazards.

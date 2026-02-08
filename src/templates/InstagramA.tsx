@@ -10,13 +10,17 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-export const InstagramEmailA = () => (
+interface EmailProps {
+    name?: string;
+}
+
+export const InstagramEmailA = ({ name }: EmailProps) => (
     <Html>
         <Head />
         <Preview>Stop breathing fumes. Start printing smarter.</Preview>
         <Body style={main}>
             <Container style={container}>
-                <Text style={text}>Hi! I'm Fabrizio.</Text>
+                <Text style={text}>Hi {name || 'Maker'}! I'm Fabrizio.</Text>
 
                 <Text style={text}>
                     I'm an aerospace engineering student, but mostly I'm just a guy who loves 3D printing and tinkering with **open source enclosures**.

@@ -16,7 +16,11 @@ import * as React from "react";
 
 const KICKSTARTER_URL = process.env.KICKSTARTER_URL || 'https://kickstarter.com/projects/clura/clura';
 
-export const SuperbackerEmailB = () => {
+interface EmailProps {
+    name?: string;
+}
+
+export const SuperbackerEmailB = ({ name }: EmailProps) => {
     return (
         <Html>
             <Head />
@@ -37,7 +41,7 @@ export const SuperbackerEmailB = () => {
                     />
 
                     <Text style={text}>
-                        Hi, I'm Fabrizio.
+                        Hi {name || 'Maker'}, I'm Fabrizio.
                     </Text>
 
                     <Text style={text}>

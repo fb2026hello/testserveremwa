@@ -78,7 +78,7 @@ async function processBatch(
 
         // 2. Fetch Leads
         const query = `
-            SELECT id, email, user_testing_version 
+            SELECT id, email, name, user_testing_version 
             FROM ${sourceTable} 
             WHERE email_1_sent_at IS NULL 
             LIMIT $1
@@ -131,25 +131,25 @@ async function sendEmail(user: any, senderEmail: string, sourceType: 'kickstarte
 
     if (sourceType === 'kickstarter') {
         if (version === 'A') {
-            emailComponent = SuperbackerEmailA({});
+            emailComponent = SuperbackerEmailA({ name: user.name });
             subject = 'Open Source hardware + 3d printer enclosure = better and safer printing';
         } else if (version === 'B') {
-            emailComponent = SuperbackerEmailB({});
+            emailComponent = SuperbackerEmailB({ name: user.name });
             subject = 'Open source hardware + Aerospace eng. student = Awesome 3d printer enclosure';
         } else {
-            emailComponent = SuperbackerEmailC({});
+            emailComponent = SuperbackerEmailC({ name: user.name });
             subject = 'The 3d printer enclosure I wished someone built (Open Source & Affordable)';
         }
     } else {
         // Instagram Logic
         if (version === 'A') {
-            emailComponent = InstagramEmailA({});
+            emailComponent = InstagramEmailA({ name: user.name });
             subject = 'Open Source hardware + 3d printer enclosure = better and safer printing';
         } else if (version === 'B') {
-            emailComponent = InstagramEmailB({});
+            emailComponent = InstagramEmailB({ name: user.name });
             subject = 'The Ultimate 3d printer enclosure for your Prusa MK3/4 & Prusa Mini';
         } else {
-            emailComponent = InstagramEmailC({});
+            emailComponent = InstagramEmailC({ name: user.name });
             subject = "I don't care if you buy this.";
         }
     }
