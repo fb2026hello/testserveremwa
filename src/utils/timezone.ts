@@ -8,8 +8,8 @@ export function isWithinSendingWindow(): boolean {
     const now = DateTime.now().setZone('America/Chicago');
     const hour = now.hour;
 
-    // 7 AM to 11 PM (inclusive of 22:59)
-    return hour >= 7 && hour < 23;
+    // 7 AM to Midnight (00:00)
+    return hour >= 7 && hour < 24;
 }
 
 export function getCurrentCentralTime(): string {
