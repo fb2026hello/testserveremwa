@@ -32,12 +32,12 @@ const TRACKING_DOMAIN = process.env.TRACKING_DOMAIN;
 // --- CONFIGURATION ---
 // 1. Instagram
 const INSTA_DOMAIN = 'launch.clura.dev';
-const INSTA_SENDERS_COUNT = 150;
+const INSTA_SENDERS_COUNT = 100;
 const INSTA_RAMP = { startQuota: 25, endQuota: 100, rampDays: 6 };
 
 // 2. Kickstarter
 const KS_DOMAIN = 'ks.clura.dev';
-const KS_SENDERS_COUNT = 150; // User implied "Do the same" pattern
+const KS_SENDERS_COUNT = 40;
 const KS_RAMP = { startQuota: 25, endQuota: 40, rampDays: 6 };
 
 async function processBatch(
@@ -60,6 +60,16 @@ async function processBatch(
 
     const today = DateTime.now().toISODate();
 
+    // Hourly Pacing Logic
+    // We want to spread the quota over the remaining hours of the day (until 24:00).
+    const centralTime = DateTime.now().setZone('America/Chicago');
+    const currentHour = centralTime.hour;
+    const sendingWindowEnd = 24;
+    let hoursLeft = sendingWindowEnd - currentHour;
+    if (hoursLeft < 1) hoursLeft = 1; // Safety net, though loop usually runs in window
+
+    console.log(`Current Hour (CST): ${currentHour}. Hours Left: ${hoursLeft}`);
+
     for (const senderEmail of senders) {
         // 1. Check how many this specific sender has sent today
         const countRes = await pool.query(
@@ -67,14 +77,18 @@ async function processBatch(
             [senderEmail, today]
         );
         const sentToday = parseInt(countRes.rows[0].count);
-        const remaining = quotaPerSender - sentToday;
+        const remainingDaily = quotaPerSender - sentToday;
 
-        if (remaining <= 0) {
+        if (remainingDaily <= 0) {
             // console.log(`Sender ${senderEmail} exhausted quota (${sentToday}/${quotaPerSender}).`);
             continue;
         }
 
-        // console.log(`Sender ${senderEmail} has ${remaining} sends remaining.`);
+        // Calculate limit for THIS specific run to ensure spread
+        // Example: Quota 25. Hours left 10. Limit = ceil(25/10) = 3.
+        const batchLimit = Math.ceil(remainingDaily / hoursLeft);
+
+        // console.log(`Sender ${senderEmail}: Daily Left ${remainingDaily}. Batch Limit ${batchLimit}.`);
 
         // 2. Fetch Leads
         const query = `
@@ -83,7 +97,7 @@ async function processBatch(
             WHERE email_1_sent_at IS NULL 
             LIMIT $1
         `;
-        const { rows: leads } = await pool.query(query, [remaining]);
+        const { rows: leads } = await pool.query(query, [batchLimit]);
 
         if (leads.length === 0) {
             console.log(`No more leads remaining in ${sourceTable}.`);
