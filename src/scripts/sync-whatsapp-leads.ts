@@ -101,6 +101,19 @@ async function markAsSent(id: number): Promise<void> {
 async function syncLeads(): Promise<void> {
   console.log('Starting WhatsApp lead sync...');
 
+  // Debug: Check total pending users (without time filter)
+  const debugQuery = `
+    SELECT COUNT(*) as total,
+           COUNT(*) FILTER (WHERE created_at < NOW() - INTERVAL '15 minutes') as older_than_15min
+    FROM users
+    WHERE wa_message_sent = FALSE
+      AND phone_number IS NOT NULL
+      AND phone_number != ''
+  `;
+  const debugResult = await pool.query(debugQuery);
+  console.log(`Debug: Total pending users with phone: ${debugResult.rows[0].total}`);
+  console.log(`Debug: Users older than 15 min: ${debugResult.rows[0].older_than_15min}`);
+
   // Query users where wa_message_sent = FALSE and has a phone number
   // 15-minute delay to allow for data to settle
   const query = `
