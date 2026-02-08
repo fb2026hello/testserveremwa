@@ -48,12 +48,11 @@ const sheets = google.sheets({ version: 'v4', auth });
 // ============================================
 // Types
 // ============================================
-interface Lead {
-  id: string;
-  first_name: string | null;
-  phone: string | null;
+interface User {
+  id: number;
+  name: string | null;
+  phone_number: string | null;
   is_vip: boolean;
-  source: 'kickstarter' | 'instagram';
 }
 
 // ============================================
@@ -82,18 +81,17 @@ function extractFirstName(name: string | null): string {
 async function appendToSheet(spreadsheetId: string, values: string[][]): Promise<void> {
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: 'Sheet1!A:B', // Append to columns A and B
+    range: 'Sheet1!A:B',
     valueInputOption: 'RAW',
     requestBody: { values }
   });
 }
 
 /**
- * Mark a lead as sent in the database
+ * Mark a user as sent in the database
  */
-async function markAsSent(id: string, source: 'kickstarter' | 'instagram'): Promise<void> {
-  const table = source === 'kickstarter' ? 'leads_kickstarter' : 'leads_instagram';
-  await pool.query(`UPDATE ${table} SET wa_message_sent = TRUE WHERE id = $1`, [id]);
+async function markAsSent(id: number): Promise<void> {
+  await pool.query('UPDATE users SET wa_message_sent = TRUE WHERE id = $1', [id]);
 }
 
 // ============================================
@@ -101,82 +99,78 @@ async function markAsSent(id: string, source: 'kickstarter' | 'instagram'): Prom
 // ============================================
 async function syncLeads(): Promise<void> {
   console.log('Starting WhatsApp lead sync...');
-  
-  // Query leads from both tables
+
+  // Query users where wa_message_sent = FALSE and has a phone number
+  // 15-minute delay to allow for data to settle
   const query = `
-    SELECT id, first_name, phone, is_vip, 'kickstarter' as source
-    FROM leads_kickstarter
+    SELECT id, name, phone_number, is_vip
+    FROM users
     WHERE wa_message_sent = FALSE
       AND created_at < NOW() - INTERVAL '15 minutes'
-      AND phone IS NOT NULL
-      AND phone != ''
-    UNION ALL
-    SELECT id, first_name, phone, is_vip, 'instagram' as source
-    FROM leads_instagram
-    WHERE wa_message_sent = FALSE
-      AND created_at < NOW() - INTERVAL '15 minutes'
-      AND phone IS NOT NULL
-      AND phone != ''
+      AND phone_number IS NOT NULL
+      AND phone_number != ''
   `;
-  
+
   const result = await pool.query(query);
-  const leads: Lead[] = result.rows;
-  
-  console.log(`Found ${leads.length} leads to sync`);
-  
-  if (leads.length === 0) {
-    console.log('No leads to sync. Exiting.');
+  const users: User[] = result.rows;
+
+  console.log(`Found ${users.length} users to sync`);
+
+  if (users.length === 0) {
+    console.log('No users to sync. Exiting.');
+    await pool.end();
     return;
   }
-  
-  // Separate VIP and Non-VIP leads
-  const vipLeads: Lead[] = [];
-  const nonVipLeads: Lead[] = [];
-  
-  for (const lead of leads) {
-    if (lead.is_vip) {
-      vipLeads.push(lead);
+
+  // Separate VIP and Non-VIP users
+  const vipUsers: User[] = [];
+  const nonVipUsers: User[] = [];
+
+  for (const user of users) {
+    if (user.is_vip) {
+      vipUsers.push(user);
     } else {
-      nonVipLeads.push(lead);
+      nonVipUsers.push(user);
     }
   }
-  
-  console.log(`VIP leads: ${vipLeads.length}, Non-VIP leads: ${nonVipLeads.length}`);
-  
-  // Process VIP leads
-  if (vipLeads.length > 0) {
-    const vipRows = vipLeads.map(lead => [
-      extractFirstName(lead.first_name),
-      formatPhone(lead.phone)
+
+  console.log(`VIP users: ${vipUsers.length}, Non-VIP users: ${nonVipUsers.length}`);
+
+  // Process VIP users
+  if (vipUsers.length > 0) {
+    const vipRows = vipUsers.map(user => [
+      extractFirstName(user.name),
+      formatPhone(user.phone_number)
     ]);
-    
-    console.log('Appending VIP leads to sheet...');
+
+    console.log('Appending VIP users to sheet...');
     await appendToSheet(SHEET_ID_VIP!, vipRows);
-    
+
     // Mark as sent
-    for (const lead of vipLeads) {
-      await markAsSent(lead.id, lead.source);
+    for (const user of vipUsers) {
+      await markAsSent(user.id);
     }
-    console.log(`Marked ${vipLeads.length} VIP leads as sent`);
+    console.log(`Marked ${vipUsers.length} VIP users as sent`);
   }
-  
-  // Process Non-VIP leads
-  if (nonVipLeads.length > 0) {
-    const nonVipRows = nonVipLeads.map(lead => [
-      extractFirstName(lead.first_name),
-      formatPhone(lead.phone)
+
+  // Process Non-VIP users
+  if (nonVipUsers.length > 0) {
+    const nonVipRows = nonVipUsers.map(user => [
+      extractFirstName(user.name),
+      formatPhone(user.phone_number)
     ]);
-    
-    console.log('Appending Non-VIP leads to sheet...');
+
+    console.log('Appending Non-VIP users to sheet...');
     await appendToSheet(SHEET_ID_NON_VIP!, nonVipRows);
-    
+
     // Mark as sent
-    for (const lead of nonVipLeads) {
-      await markAsSent(lead.id, lead.source);
+    for (const user of nonVipUsers) {
+      await markAsSent(user.id);
     }
-    console.log(`Marked ${nonVipLeads.length} Non-VIP leads as sent`);
+    console.log(`Marked ${nonVipUsers.length} Non-VIP users as sent`);
   }
-  
+
+  await pool.end();
   console.log('Sync completed successfully!');
 }
 
