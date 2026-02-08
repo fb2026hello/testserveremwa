@@ -47,11 +47,11 @@ export const SuperbackerEmailB = ({ name }: EmailProps) => {
                     <Text style={text}>
                         I know you must receive a lot of emails like this—people trying to hype up their **3D printer enclosures** or accessories to get a pledge.
                         <br /><br />
-                        To be honest, I initially did not want to send this. I felt that it made our project look like all of these "companies" just trying to sell you something. <strong>But we're different.</strong> Everything I have ever made is open source and available on my github.
+                        To be honest, I initially did not want to send this. I felt that it made our project look like all of these "companies" just trying to sell you something. <strong>But we're different.</strong> Everything I have ever made is open source and available on my GitHub.
                     </Text>
 
                     <Text style={text}>
-                        I have spent the last 18 months of my life working on this project as an aerospace engineering student. My goal isn't just to sell units; it is to help as many makers as possible safeguard their health when 3d printing.
+                        I have spent the last 18 months of my life working on this project as an aerospace engineering student. My goal isn't just to sell units; it is to help as many makers as possible safeguard their health when 3D printing.
                     </Text>
 
                     <Section style={box}>
@@ -86,7 +86,7 @@ export const SuperbackerEmailB = ({ name }: EmailProps) => {
                             Follow the Project
                         </Button>
                         <Text style={{ ...caption, marginTop: "12px" }}>
-                            Or <Link style={link} href="https://github.com/Cluradev/CluraEnclosure">view on Gitub</Link>
+                            Or <Link style={link} href="https://github.com/Cluradev/CluraEnclosure">view on GitHub</Link>
                         </Text>
                     </Section>
 

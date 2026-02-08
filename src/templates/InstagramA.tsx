@@ -51,7 +51,7 @@ export const InstagramEmailA = ({ name }: EmailProps) => (
                 </Text>
 
                 <Text style={text}>
-                    We have a <Link href="https://github.com/Cluradev/CluraEnclosure" style={link}>Github repo</Link> with all our files, and a documentation page if you want to see how it works. We are also launching on Kickstarter soon, so if you want to grab a kit for your setup, <Link href="https://clura.dev" style={link}>now is the time to look at clura.dev</Link>.
+                    We have a <Link href="https://github.com/Cluradev/CluraEnclosure" style={link}>GitHub repo</Link> with all our files, and a documentation page if you want to see how it works. We are also launching on Kickstarter soon, so if you want to grab a kit for your setup, <Link href="https://clura.dev" style={link}>now is the time to look at clura.dev</Link>.
                 </Text>
 
                 <Text style={text}>

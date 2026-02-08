@@ -132,22 +132,22 @@ async function sendEmail(user: any, senderEmail: string, sourceType: 'kickstarte
     if (sourceType === 'kickstarter') {
         if (version === 'A') {
             emailComponent = SuperbackerEmailA({ name: user.name });
-            subject = 'Open Source hardware + 3d printer enclosure = better and safer printing';
+            subject = 'Open Source hardware + 3D printer enclosure = better and safer printing';
         } else if (version === 'B') {
             emailComponent = SuperbackerEmailB({ name: user.name });
-            subject = 'Open source hardware + Aerospace eng. student = Awesome 3d printer enclosure';
+            subject = 'Open source hardware + Aerospace eng. student = Awesome 3D printer enclosure';
         } else {
             emailComponent = SuperbackerEmailC({ name: user.name });
-            subject = 'The 3d printer enclosure I wished someone built (Open Source & Affordable)';
+            subject = 'The 3D printer enclosure I wished someone built (Open Source & Affordable)';
         }
     } else {
         // Instagram Logic
         if (version === 'A') {
             emailComponent = InstagramEmailA({ name: user.name });
-            subject = 'Open Source hardware + 3d printer enclosure = better and safer printing';
+            subject = 'Open Source hardware + 3D printer enclosure = better and safer printing';
         } else if (version === 'B') {
             emailComponent = InstagramEmailB({ name: user.name });
-            subject = 'The Ultimate 3d printer enclosure for your Prusa MK3/4 & Prusa Mini';
+            subject = 'The Ultimate 3D printer enclosure for your Prusa MK3/4 & Prusa Mini';
         } else {
             emailComponent = InstagramEmailC({ name: user.name });
             subject = "I don't care if you buy this.";
@@ -169,7 +169,7 @@ async function sendEmail(user: any, senderEmail: string, sourceType: 'kickstarte
     // $('body').append(`<img src="${TRACKING_DOMAIN}/api/track/open?log_id=${logId}" alt="" width="1" height="1" style="display:none;" />`);
 
     // Inject Click Tracking & UTMs
-    $('a').each((_, element) => {
+    $('a').each((_: number, element: cheerio.Element) => {
         let href = $(element).attr('href');
         if (href) {
             // UTM Injection for clura.dev links

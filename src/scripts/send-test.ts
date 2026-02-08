@@ -44,7 +44,7 @@ async function main() {
     await new Promise(r => setTimeout(r, 1000));
     await sendTest(SuperbackerEmailB({ name: 'Fabrizio' }), 'Superbacker B: Open source hardware + Aero...', 'Superbacker B');
     await new Promise(r => setTimeout(r, 1000));
-    await sendTest(SuperbackerEmailC({ name: 'Fabrizio' }), 'Superbacker C: The 3d printer enclosure...', 'Superbacker C');
+    await sendTest(SuperbackerEmailC({ name: 'Fabrizio' }), 'Superbacker C: The 3D printer enclosure...', 'Superbacker C');
     await new Promise(r => setTimeout(r, 1000));
 
     // Instagram

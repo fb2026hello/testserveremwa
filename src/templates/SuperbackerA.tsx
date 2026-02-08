@@ -12,7 +12,11 @@ import * as React from 'react';
 
 const KICKSTARTER_URL = process.env.KICKSTARTER_URL || 'https://kickstarter.com/projects/clura/clura';
 
-export const SuperbackerEmailA = () => (
+interface EmailProps {
+    name?: string;
+}
+
+export const SuperbackerEmailA = ({ name }: EmailProps) => (
     <Html>
         <Head />
         <Preview>A safer way to 3D print, built by an aerospace student.</Preview>
@@ -50,7 +54,7 @@ export const SuperbackerEmailA = () => (
                 </Text>
 
                 <Text style={text}>
-                    I thought that you might want to check out our <Link href="https://github.com/Cluradev/CluraEnclosure" style={link}>Github repo</Link> which contains everything we have ever made and our documentation page.
+                    I thought that you might want to check out our <Link href="https://github.com/Cluradev/CluraEnclosure" style={link}>GitHub repo</Link> which contains everything we have ever made and our documentation page.
                 </Text>
 
                 <Text style={text}>
